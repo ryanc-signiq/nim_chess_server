@@ -1,9 +1,11 @@
 ## NimChess type definitions
 
 type
+    BitBoardUint = distinct uint64
+
     BoardState* = ref object of RootObj
         ## The current state of a chess board, a 64 bit bitfield
-        field {.bitsize:64.}: culonglong
+        field {.bitsize:64.}: BitBoardUint
 
     PieceKind*  {.pure.} = enum
         ## Available types that a Piece on a Board can be
@@ -30,3 +32,5 @@ proc `<<=`*(a: var uint64, b: uint64): uint64 =
     a = a shl b
 
 var BitScanDatabase*: BitScanDatabaseType
+
+proc `[]`*(bst: var BitScanDatabaseType, val: uint): 
