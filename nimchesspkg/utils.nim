@@ -9,4 +9,4 @@ proc initializeFirstOne*(): void =
     while bit > uint64(0):
         BitScanDatabase[uint64((bit * BITSCAN_MAGIC) shr 58)] = i
         i.inc
-        bit <<= uint64(1)
+        bit shl uint64(1)
