@@ -28,7 +28,7 @@ type
 
     PieceBoard* = array[PieceKind.pawn..PieceKind.king, BitBoard]
     BitBoards* = array[ColorKind.black..ColorKind.white, PieceBoard]
-    HelperBitBoards* = array[0..2, BitBoard] # Helper bitboards
+    HelperBitBoards* = array[HelperBitBoardTypes.black..HelperBitBoardTypes.all, BitBoard] # Helper bitboards
 
     Piece* = ref object of RootObj
         ## A representation of a piece on a chess board
