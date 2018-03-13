@@ -21,4 +21,4 @@ task docs, "Build all the docs":
     exec "nim doc --out:docs/nimchess.html src/nimchess.nim"
 
 task test, "Test Project":
-    exec "nim c -r --out:bin/tests tests/bitboard_tests"
+    exec "nim c --stackTrace:on --lineTrace:on -r --out:bin/tests tests/bitboard_tests"

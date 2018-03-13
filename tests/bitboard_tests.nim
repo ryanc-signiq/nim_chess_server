@@ -1,6 +1,6 @@
 
 when isMainModule:
-    import unittest, strutils
+    import unittest, strutils, json
     import nimchesspkg/[types, board]
     suite "test bitboard operations on boards":
 
@@ -18,38 +18,38 @@ when isMainModule:
         test "check pawns are created":
             let blackPawnBoard = BitBoard(0x00FF000000000000'u64)
             let whitePawnBoard = BitBoard(0x000000000000FF00'u64)
-            check(boards[ColorKind.white][PieceKind.pawn] == whitePawnBoard)
-            check(boards[ColorKind.black][PieceKind.pawn] == blackPawnBoard)
+            check(boards[ColorKind.White][PieceKind.Pawn] == whitePawnBoard)
+            check(boards[ColorKind.Black][PieceKind.Pawn] == blackPawnBoard)
 
         test "check bishop boards are created":
             let blackBishopBoard = BitBoard(0x2400000000000000'u64)
             let whiteBishopBoard = BitBoard(0x0000000000000024'u64)
-            check(boards[ColorKind.white][PieceKind.bishop] == whiteBishopBoard)
-            check(boards[ColorKind.black][PieceKind.bishop] == blackBishopBoard)
+            check(boards[ColorKind.White][PieceKind.Bishop] == whiteBishopBoard)
+            check(boards[ColorKind.Black][PieceKind.Bishop] == blackBishopBoard)
 
         test "check rook boards are created":
             let blackRookBoard = BitBoard(0x7100000000000000'u64)
             let whiteRookBoard = BitBoard(0x0000000000000071'u64)
-            check(boards[ColorKind.white][PieceKind.rook] == whiteRookBoard)
-            check(boards[ColorKind.black][PieceKind.rook] == blackRookBoard)
+            check(boards[ColorKind.White][PieceKind.Rook] == whiteRookBoard)
+            check(boards[ColorKind.Black][PieceKind.Rook] == blackRookBoard)
 
         test "check knight boards are created":
             let blackKnightBoard = BitBoard(0x4200000000000000'u64)
             let whiteKnightBoard = BitBoard(0x0000000000000042'u64)
-            check(boards[ColorKind.white][PieceKind.knight] == whiteKnightBoard)
-            check(boards[ColorKind.black][PieceKind.knight] == blackKnightBoard)
+            check(boards[ColorKind.White][PieceKind.Knight] == whiteKnightBoard)
+            check(boards[ColorKind.Black][PieceKind.Knight] == blackKnightBoard)
 
         test "check queen boards are created":
             let blackQueenBoard = BitBoard(0x1000000000000000'u64)
             let whiteQueenBoard = BitBoard(0x0000000000000010'u64)
-            check(boards[ColorKind.white][PieceKind.queen] == whiteQueenBoard)
-            check(boards[ColorKind.black][PieceKind.queen] == blackQueenBoard)
+            check(boards[ColorKind.White][PieceKind.Queen] == whiteQueenBoard)
+            check(boards[ColorKind.Black][PieceKind.Queen] == blackQueenBoard)
 
         test "check king boards are created":
             let blackKingBoard = BitBoard(0x0800000000000000'u64)
             let whiteKingBoard = BitBoard(0x0000000000000008'u64)
-            check(boards[ColorKind.white][PieceKind.king] == whiteKingBoard)
-            check(boards[ColorKind.black][PieceKind.king] == blackKingBoard)
+            check(boards[ColorKind.White][PieceKind.King] == whiteKingBoard)
+            check(boards[ColorKind.Black][PieceKind.King] == blackKingBoard)
 
         test "check helper boards are created":
             let allBlackBoard = Bitboard(0xFFFF000000000000'u64)
@@ -59,18 +59,30 @@ when isMainModule:
             check(helpers[HelperBitBoardTypes.white] == allWhiteBoard)
             check(helpers[HelperBitBoardTypes.all] == allBoard)
 
+        test "check vectors can be applied to BitBoards":
+            let moveData = %*
+                {
+                    "smv": "a3",
+                    "emv": "c3",
+                    "color": "black",
+                    "piece": "pawn",
+                }
+            let expectedBlackBoard = BitBoard(0xDFFF200000000000'u64)
+            echo expectedBlackBoard
+            let movingTo = initMoveVector(moveData)
+            let newBoard = moveVectorToBitBoard(movingTo, boards)
+
         test "check white pawn moves":
-            let testPawnBoardFinal = BitBoard(0x000000000020DF00'u64)
-            let testPawnMove = BitBoard(0x0000000000200000'u64)
-            echo "Showing Pawn Board Final"
-            echo testPawnBoardFinal
-            echo "Showing Pawn Board current"
-            echo boards[ColorKind.white][PieceKind.pawn]
-            echo "Test Pawn Move"
-            echo testPawnMove
-            echo "Moved Now"
-            var moved = performMove(boards[ColorKind.white][PieceKind.pawn], testPawnMove)
-            echo moved
-            check(moved == testPawnBoardFinal)
+            let moveData = %*
+                {
+                    "smv": "h3",
+                    "emv": "f3",
+                    "color": "white",
+                    "piece": "pawn",
+                }
+            let testPawnBoardMove = initMoveVector(moveData)
+            let isVal = isValidMove(testPawnBoardMove, boards, helpers)
+            echo isVal
 
         echo "Tests all done!"
+
