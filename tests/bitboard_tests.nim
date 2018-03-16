@@ -62,13 +62,12 @@ when isMainModule:
         test "check vectors can be applied to BitBoards":
             let moveData = %*
                 {
-                    "smv": "a3",
+                    "smv": "b3",
                     "emv": "c3",
                     "color": "black",
                     "piece": "pawn",
                 }
             let expectedBlackBoard = BitBoard(0xDFFF200000000000'u64)
-            echo expectedBlackBoard
             let movingTo = initMoveVector(moveData)
             let newBoard = moveVectorToBitBoard(movingTo, boards)
 

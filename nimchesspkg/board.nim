@@ -45,12 +45,11 @@ proc `$`*(x: BitBoard): string =
 
 proc splitCoordinates(rankfile: string): Move =
     ## Splits a Rank/File string (ie A5, C7)
-    (rankfile[0], parseBiggestUInt(newString(1) & (rankfile[1])))
+    (rankfile[0], uint64(parseInt($rankfile[1])))
 
 
 proc initMoveVector*(data: JsonNode): MoveVector =
     ## Builds a Movement Vector from a JSON message
-    echo data.kind
     var 
         smv, emv: Move
         color: ColorKind
@@ -213,12 +212,21 @@ proc moveVectorToBitBoard*(x: MoveVector, boards: BitBoards): BitBoard =
     ## This applies a move vector to a bitboard and returns a copy of the new bitboard
     let
         smv = x.oldPos
-        emv = x.oldPos
+        emv = x.newPos
         color = x.piece.color
         kind = x.piece.kind
 
+    #get the current position of the piece in question
+    #XOR that with the current board state to get just that piece's position
+    #Shift piece to new position:
+    #   Remember to verify if we're using shl/shr, depending on whether the piece is going up or down
+    #send back new board to be verified
+    
+
     var board = boards[color][kind]
-    var newBoard = BitBoard((0'u64 shl (RANKS[smv.rank] * 8'u64)) shl smv.file)
+    let currentPiece = BitBoard(0x1'u64 shl 
+    var newBoard = BitBoard((0x1000'u64 shl ((RANKS[emv.rank] - RANKS[smv.rank]) * 8'u64)) shl (emv.file - smv.file))
+    echo "after testing"
     echo newBoard
     return newBoard
     
@@ -242,23 +250,10 @@ proc isValidMove*(movingTo: MoveVector, boardState: BitBoards, helpers: HelperBi
 
                 validTwoPushPawnMoves = BitBoard((validTwoPushPawnMoves and startingPawns) shr 16) #Valid at the start
 
-            echo "Valid Pawn Moves"
-            echo validPawnMoves
-
-            echo "Valid 2 push pawn moves"
-            echo validTwoPushPawnMoves
-
             #Check if our square is occupied by ANDing our valid pawn moves by unoccupied spaces
             var validUnoccupiedSquares = (validPawnMoves or validTwoPushPawnMoves) and not (fullPieceBoard(HelperBitBoardTypes.white, boardState, helpers) or fullPieceBoard(HelperBitBoardTypes.black, boardState, helpers)) 
 
-            echo "Unoccupied Squares"
             echo (not (fullPieceBoard(HelperBitBoardTypes.white, boardState, helpers) or fullPieceBoard(HelperBitBoardTypes.black, boardState, helpers)))
-
-            echo "Unoccupied Squares we can move onto"
-            echo validUnoccupiedSquares
-
-            echo "Moving To"
-            echo movingTo
 
             var movedPiece = moveVectorToBitBoard(movingTo, boardState)
             echo "Moved Pieces"
